@@ -392,11 +392,16 @@
      MOBILE STYLES — only apply below 760px, desktop is untouched
   ============================================================== */
 
-  /* Hamburger button visible only on mobile */
+  /* ================================================================
+     MOBILE STYLES — only apply below 760px; desktop UI untouched
+  ================================================================= */
+
+  /* Elements present only on mobile — hidden by default on desktop */
   #mobileMenuBtn { display: none; }
   #mobileTopBar { display: none; }
+  #mobileAddFAB { display: none; }
 
-  /* Backdrop for slide-in sidebar */
+  /* Sidebar backdrop (overlay when drawer is open) */
   #sidebarBackdrop {
     display: none;
     position: fixed; inset: 0;
@@ -408,10 +413,14 @@
   #sidebarBackdrop.show { opacity: 1; }
 
   @media (max-width: 760px) {
-    /* --- App becomes single column --- */
-    .app { grid-template-columns: 1fr; }
+    /* ============ LAYOUT ============ */
+    .app {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+      min-height: 100vh;
+    }
 
-    /* --- Sidebar becomes a slide-in drawer, hidden by default --- */
+    /* ============ SIDEBAR DRAWER ============ */
     .sidebar {
       position: fixed;
       top: 0; left: 0;
@@ -425,17 +434,20 @@
       overflow-y: auto;
     }
     .sidebar.open { transform: translateX(0); }
+    .nav-btn { padding: 11px 12px; font-size: 14px; }
+    .nav-btn .nav-icon { font-size: 14px; }
 
-    /* --- Top bar with hamburger + page title --- */
+    /* ============ MOBILE TOP BAR ============ */
     #mobileTopBar {
       display: flex;
       align-items: center;
-      padding: 12px 14px;
+      padding: 10px 14px;
       background: var(--paper);
       border-bottom: 1px solid var(--rule);
       position: sticky; top: 0;
       z-index: 40;
       gap: 12px;
+      min-height: 56px;
     }
     #mobileMenuBtn {
       display: flex;
@@ -449,8 +461,9 @@
       font-size: 18px;
       color: var(--ink);
       flex-shrink: 0;
+      padding: 0;
     }
-    #mobileMenuBtn:hover { background: var(--rule-soft); }
+    #mobileMenuBtn:active { background: var(--rule-soft); }
     #mobileTopBarTitle {
       font-family: var(--serif);
       font-size: 17px;
@@ -463,17 +476,20 @@
       white-space: nowrap;
     }
 
-    /* Backdrop shows when sidebar is open */
     #sidebarBackdrop.show { display: block; }
 
-    /* --- Main content --- */
-    .main { padding: 16px 14px 80px; max-width: 100%; }
+    /* ============ MAIN CONTENT ============ */
+    .main {
+      padding: 16px 14px 88px;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
     .page-head { margin-bottom: 18px; padding-bottom: 14px; }
-    .page-title { font-size: 22px; line-height: 1.15; }
+    .page-title { font-size: 22px; line-height: 1.2; }
     .page-eyebrow { font-size: 9px; }
     .page-desc { font-size: 13px; }
 
-    /* --- Stat cards: 2 per row --- */
+    /* ============ STAT CARDS ============ */
     .stat-grid {
       grid-template-columns: repeat(2, 1fr);
       gap: 8px;
@@ -482,21 +498,30 @@
     .stat { padding: 12px 14px; }
     .stat-label { font-size: 9px; }
     .stat-val { font-size: 20px; }
-    .stat-meta { font-size: 10px; }
+    .stat-meta { font-size: 10px; line-height: 1.3; }
 
-    /* --- Dashboard sections stack --- */
+    /* Dashboard two-column → single column */
     .dash-grid { grid-template-columns: 1fr; gap: 14px; }
 
-    /* --- Section heads stack their actions --- */
+    /* ============ SECTIONS ============ */
     .section { margin-bottom: 22px; }
     .section-head {
       flex-direction: column;
       align-items: stretch;
       gap: 8px;
+      min-width: 0;
+      max-width: 100%;
     }
+    .section-head > .filter-row { min-width: 0; max-width: 100%; }
     .section-title { font-size: 16px; }
 
-    /* --- Buttons: bigger tap targets --- */
+    /* Hide full-width "+ Add" buttons that lived in section headers —
+       we surface adds via a floating action button instead */
+    .section-head > .btn[data-add] {
+      display: none;
+    }
+
+    /* ============ BUTTONS ============ */
     .btn {
       padding: 9px 14px;
       font-size: 13px;
@@ -511,47 +536,41 @@
       min-height: 36px;
     }
 
-    /* --- Filters scroll horizontally so they don't wrap into a mess --- */
+    /* ============ FILTERS — horizontal scroll ============ */
     .filter-row {
       flex-wrap: nowrap;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       padding-bottom: 4px;
       scrollbar-width: none;
+      mask-image: linear-gradient(to right, black 92%, transparent 100%);
     }
     .filter-row::-webkit-scrollbar { display: none; }
     .filter-chip {
       flex: 0 0 auto;
-      padding: 7px 12px;
+      padding: 7px 14px;
       font-size: 12px;
+      min-height: 30px;
     }
     .search-input {
       flex: 1 0 auto;
-      min-width: 150px;
+      min-width: 160px;
       padding: 8px 12px;
       font-size: 13px;
+      min-height: 36px;
     }
 
-    /* --- TABLES → COMPACT CARDS (readable, no horizontal scroll) ---
-       Same table semantics work, we just restyle on mobile.
-       Each <tr> = a compact card with the first cell prominent,
-       money cells inlined as a row, actions tucked at the right. */
+    /* ============ TABLES → STACKED CARDS ============
+       Each <tr> = one card. First cell is title, data-labeled cells
+       show as labeled meta rows, badge inlines, actions float right. */
+    .card .table { display: block; width: 100%; max-width: 100%; }
     .card .table thead { display: none; }
-    .card .table,
-    .card .table tbody {
-      display: block;
-      width: 100%;
-    }
+    .card .table tbody { display: block; width: 100%; }
     .card .table tr {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      grid-template-areas:
-        "title actions"
-        "meta meta";
-      gap: 4px 8px;
-      padding: 12px 14px;
+      display: block;
+      position: relative;
+      padding: 14px 56px 14px 14px;
       border-bottom: 1px solid var(--rule-soft);
-      align-items: start;
     }
     .card .table tr:last-child { border-bottom: none; }
     .card .table tr:hover td { background: transparent; }
@@ -560,113 +579,139 @@
       padding: 0;
       border-bottom: none;
       text-align: left !important;
-      font-size: 13px;
-      line-height: 1.4;
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: var(--ink-soft);
     }
-    /* First cell = the title block (item name + sub) */
+    /* First cell prominence */
     .card .table td:first-child {
-      grid-area: title;
       font-size: 14px;
       font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 6px;
     }
-    /* All "money/data" cells share the meta row, inline-flowed */
-    .card .table td:not(:first-child):not(.col-actions):not(:empty) {
-      grid-area: meta;
+    /* Labeled cells get a small uppercase prefix */
+    .card .table td[data-label]::before {
+      content: attr(data-label);
       display: inline-block;
-      font-size: 12px;
-      color: var(--ink-soft);
-      margin-right: 12px;
-    }
-    /* Labels for money cells (only show on mobile, via data-label attr) */
-    .card .table td[data-label]:not(:empty)::before {
-      content: attr(data-label) " ";
+      width: 64px;
       color: var(--ink-muted);
       font-size: 10px;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin-right: 3px;
       font-weight: 500;
     }
-    /* Hide empty cells entirely so they don't take up grid space */
-    .card .table td:empty,
-    .card .table td:has(> .text-muted:only-child) { display: none; }
-    /* Stack helper class for items that have multiple metadata divs in one cell */
-    .card .table td:not(:first-child) > div {
-      display: inline;
+    /* Hide cells that only contain placeholder dashes */
+    .card .table td:empty { display: none; }
+    .card .table td:has(> span.text-muted:only-child) { display: none; }
+    /* Badge-only cell inlines */
+    .card .table td:has(> .badge:only-child) {
+      display: inline-block;
+      margin-top: 8px;
       margin-right: 8px;
+      padding: 0;
     }
-    .card .table td:not(:first-child) > div:not(:last-child)::after {
-      content: " · ";
-      color: var(--ink-muted);
-      opacity: 0.5;
-    }
-    /* Badge column flows into meta */
-    .card .table td .badge {
-      vertical-align: baseline;
-    }
-    /* Actions stay top-right */
+    /* Actions absolutely positioned in row */
     .card .table td.col-actions {
-      grid-area: actions;
+      position: absolute;
+      top: 8px;
+      right: 6px;
       text-align: right !important;
+      padding: 0;
       white-space: nowrap;
     }
-
-    /* --- Comm cards tighten --- */
-    .comm-card { padding: 12px 14px; }
-    .comm-subject { font-size: 14px; }
-    .comm-body { font-size: 13px; }
-    .comm-head { flex-direction: column; gap: 8px; }
-
-    /* --- Modal: full-screen-ish on mobile --- */
-    .modal-backdrop { padding: 0; align-items: flex-end; }
-    .modal {
-      max-width: 100%;
-      max-height: 92vh;
-      border-radius: 14px 14px 0 0;
-      padding: 20px 16px 24px;
+    .card .table td.col-actions .btn-icon-only {
+      padding: 6px 8px;
+      min-width: 32px;
+      min-height: 32px;
     }
-    .modal-title { font-size: 17px; }
-    .form-row, .form-row-3 { grid-template-columns: 1fr; }
-    input[type=text], input[type=number], input[type=date], select, textarea {
-      padding: 10px 12px;
-      font-size: 16px;  /* iOS won't zoom on focus if >= 16px */
-    }
-    .modal-foot { flex-direction: column-reverse; gap: 8px; }
-    .modal-foot .btn { width: 100%; }
+    /* Inner divs in cells stay block */
+    .card .table td > div { display: block; }
 
-    /* --- Budget overview 4-col stat grid → 2-col on mobile --- */
+    /* ============ BUDGET OVERVIEW — 2x2 stat cards ============ */
     .card > div[style*="grid-template-columns: repeat(4, 1fr)"] {
       grid-template-columns: repeat(2, 1fr) !important;
-      gap: 14px !important;
+      gap: 16px !important;
     }
-    /* Budget total editable input shouldn't overflow */
     #budgetTotal {
       width: 100% !important;
       font-size: 20px !important;
     }
 
-    /* --- Timeline tighter --- */
-    .timeline { padding-left: 20px; }
+    /* ============ COMM CARDS ============ */
+    .comm-card { padding: 12px 14px; }
+    .comm-subject { font-size: 14px; line-height: 1.35; }
+    .comm-body { font-size: 13px; }
+    .comm-head { flex-direction: column; gap: 6px; align-items: stretch !important; }
+    .comm-head > div:last-child {
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: space-between;
+      gap: 0 !important;
+    }
+
+    /* ============ MODAL — bottom sheet style ============ */
+    .modal-backdrop { padding: 0; align-items: flex-end; }
+    .modal {
+      max-width: 100%;
+      width: 100%;
+      max-height: 92vh;
+      border-radius: 14px 14px 0 0;
+      padding: 20px 16px 28px;
+    }
+    .modal-title { font-size: 17px; }
+    .form-row, .form-row-3 { grid-template-columns: 1fr; }
+    input[type=text], input[type=number], input[type=date], select, textarea {
+      padding: 10px 12px;
+      font-size: 16px;  /* prevent iOS zoom-on-focus */
+    }
+    .modal-foot { flex-direction: column-reverse; gap: 8px; }
+    .modal-foot .btn { width: 100%; }
+
+    /* ============ TIMELINE ============ */
+    .timeline { padding-left: 22px; }
     .timeline-card { padding: 10px 12px; }
     .timeline-title { font-size: 14px; }
     .timeline-meta { font-size: 12px; }
 
-    /* --- Notes --- */
-    .note { font-size: 12px; padding: 10px 12px; }
+    /* ============ NOTES ============ */
+    .note { font-size: 12.5px; padding: 12px 14px; line-height: 1.5; }
 
-    /* --- Sign-in gate compresses --- */
-    #gate > div {
-      padding: 28px 22px;
-      width: 92%;
-    }
+    /* ============ SIGN-IN GATE ============ */
+    #gate > div { padding: 28px 22px; width: 92%; }
 
-    /* --- Toast --- */
+    /* ============ TOAST ============ */
     .toast {
-      bottom: 24px;
+      bottom: 88px;
       right: 16px;
       left: 16px;
       text-align: center;
     }
+
+    /* ============ FLOATING ACTION BUTTON ============
+       Replaces full-width "+Add" buttons inside section headers.
+       Appears on views where add makes sense; JS toggles its action. */
+    #mobileAddFAB {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: var(--paper);
+      border: none;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+      cursor: pointer;
+      font-size: 26px;
+      z-index: 50;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    #mobileAddFAB:active { transform: scale(0.92); }
+    #mobileAddFAB.hidden { opacity: 0; pointer-events: none; transform: translateY(20px); }
   }
 </style>
 </head>
@@ -738,6 +783,9 @@
 
 <!-- Backdrop for slide-in sidebar (mobile only) -->
 <div id="sidebarBackdrop"></div>
+
+<!-- Floating action button (mobile only — Add for the current view) -->
+<button id="mobileAddFAB" class="hidden" aria-label="Add">+</button>
 
 <script type="module">
 /* ============================================================
@@ -1029,6 +1077,16 @@ const VIEW_TITLES = {
   contacts: 'Contacts'
 };
 
+// Mobile FAB — which "Add" action each view exposes (null = no FAB)
+const VIEW_FAB = {
+  dashboard: null,
+  selections: { add: 'selection', label: 'Add selection' },
+  communications: { add: 'comm', label: 'Log conversation' },
+  budget: { add: 'co', label: 'Add change order' },
+  schedule: { add: 'phase', label: 'Add phase' },
+  contacts: { add: 'contact', label: 'Add contact' }
+};
+
 function setView(view, skipHistory) {
   state.view = view;
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
@@ -1039,6 +1097,19 @@ function setView(view, skipHistory) {
   // Update mobile top bar title
   const tb = document.getElementById('mobileTopBarTitle');
   if (tb) tb.textContent = VIEW_TITLES[view] || 'Dashboard';
+  // Update FAB
+  const fab = document.getElementById('mobileAddFAB');
+  if (fab) {
+    const cfg = VIEW_FAB[view];
+    if (cfg) {
+      fab.classList.remove('hidden');
+      fab.setAttribute('aria-label', cfg.label);
+      fab.dataset.add = cfg.add;
+    } else {
+      fab.classList.add('hidden');
+      delete fab.dataset.add;
+    }
+  }
   // Push history state so back button works
   if (!skipHistory) {
     history.pushState({ view }, '', '#' + view);
@@ -1521,18 +1592,18 @@ function renderBudget() {
                 const overBudget = catVar > 0 && hasActual;
                 return `<tr>
                   <td style="font-weight:500">${escapeHtml(cat)}</td>
-                  <td class="right currency">${fmtMoney(v.budget)}</td>
-                  <td class="right currency">${hasActual ? fmtMoney(v.actual) : '<span class="text-muted">—</span>'}</td>
-                  <td class="right currency" style="${overBudget ? 'color:var(--rust); font-weight:500' : (catVar < 0 && hasActual ? 'color:var(--moss)' : 'color:var(--ink-muted)')}">
+                  <td class="right currency" data-label="Budget">${fmtMoney(v.budget)}</td>
+                  <td class="right currency" data-label="Paid">${hasActual ? fmtMoney(v.actual) : '<span class="text-muted">—</span>'}</td>
+                  <td class="right currency" data-label="Variance" style="${overBudget ? 'color:var(--rust); font-weight:500' : (catVar < 0 && hasActual ? 'color:var(--moss)' : 'color:var(--ink-muted)')}">
                     ${hasActual ? (catVar === 0 ? '—' : (catVar > 0 ? '+' : '') + fmtMoney(catVar)) : '<span class="text-muted">—</span>'}
                   </td>
                 </tr>`;
               }).join('')}
               <tr style="border-top:2px solid var(--rule)">
                 <td style="font-weight:600">Total</td>
-                <td class="right currency" style="font-weight:600">${fmtMoney(budgetTotal)}</td>
-                <td class="right currency" style="font-weight:600">${fmtMoney(actualPaid)}</td>
-                <td class="right currency" style="font-weight:600; ${actualPaid - budgetTotal > 0 ? 'color:var(--rust)' : ''}">
+                <td class="right currency" data-label="Budget" style="font-weight:600">${fmtMoney(budgetTotal)}</td>
+                <td class="right currency" data-label="Paid" style="font-weight:600">${fmtMoney(actualPaid)}</td>
+                <td class="right currency" data-label="Variance" style="font-weight:600; ${actualPaid - budgetTotal > 0 ? 'color:var(--rust)' : ''}">
                   ${actualPaid ? ((actualPaid - budgetTotal > 0 ? '+' : '') + fmtMoney(actualPaid - budgetTotal)) : '—'}
                 </td>
               </tr>
@@ -1705,10 +1776,10 @@ function renderContacts() {
             ${state.contacts.map(c => `
               <tr>
                 <td style="font-weight:500">${escapeHtml(c.name)}</td>
-                <td class="text-small">${escapeHtml(c.role)}</td>
-                <td class="text-small">${escapeHtml(c.company)}</td>
-                <td class="text-small">${escapeHtml(c.phone)}</td>
-                <td class="text-small">${escapeHtml(c.email)}</td>
+                <td class="text-small" data-label="Role">${escapeHtml(c.role)}</td>
+                <td class="text-small" data-label="Company">${escapeHtml(c.company)}</td>
+                <td class="text-small" data-label="Phone">${escapeHtml(c.phone)}</td>
+                <td class="text-small" data-label="Email">${escapeHtml(c.email)}</td>
                 <td class="col-actions">
                   <button class="btn-icon-only" data-edit-contact="${c.id}">✎</button>
                   <button class="btn-icon-only" data-del-contact="${c.id}">×</button>
@@ -1986,6 +2057,18 @@ if (backdropEl) backdropEl.addEventListener('click', closeDrawer);
 document.getElementById('nav').addEventListener('click', (e) => {
   if (e.target.closest('.nav-btn')) closeDrawer();
 });
+
+// Mobile FAB — triggers the Add modal for the current view by clicking
+// the hidden desktop "+ Add" button (which has the proper handler bound)
+const fabBtn = document.getElementById('mobileAddFAB');
+if (fabBtn) {
+  fabBtn.addEventListener('click', () => {
+    const addType = fabBtn.dataset.add;
+    if (!addType) return;
+    const target = document.querySelector(`[data-add="${addType}"]`);
+    if (target) target.click();
+  });
+}
 
 // Browser back button handling
 window.addEventListener('popstate', (e) => {
