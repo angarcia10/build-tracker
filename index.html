@@ -391,113 +391,132 @@
   /* =============================================================
      MOBILE STYLES — only apply below 760px, desktop is untouched
   ============================================================== */
+
+  /* Hamburger button visible only on mobile */
+  #mobileMenuBtn { display: none; }
+  #mobileTopBar { display: none; }
+
+  /* Backdrop for slide-in sidebar */
+  #sidebarBackdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(26, 24, 20, 0.5);
+    z-index: 60;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  #sidebarBackdrop.show { opacity: 1; }
+
   @media (max-width: 760px) {
-    /* --- Layout shift: sidebar becomes a top bar --- */
+    /* --- App becomes single column --- */
     .app { grid-template-columns: 1fr; }
 
+    /* --- Sidebar becomes a slide-in drawer, hidden by default --- */
     .sidebar {
-      position: sticky;
-      top: 0;
-      height: auto;
-      flex-direction: column;
-      padding: 12px 16px 0;
-      border-right: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 280px;
+      max-width: 85vw;
+      height: 100vh;
+      z-index: 70;
+      transform: translateX(-100%);
+      transition: transform 0.22s ease;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+      overflow-y: auto;
+    }
+    .sidebar.open { transform: translateX(0); }
+
+    /* --- Top bar with hamburger + page title --- */
+    #mobileTopBar {
+      display: flex;
+      align-items: center;
+      padding: 12px 14px;
+      background: var(--paper);
       border-bottom: 1px solid var(--rule);
-      z-index: 50;
+      position: sticky; top: 0;
+      z-index: 40;
+      gap: 12px;
     }
-    .brand {
-      padding: 0 0 10px;
-      border-bottom: none;
+    #mobileMenuBtn {
       display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
+      align-items: center;
+      justify-content: center;
+      width: 40px; height: 40px;
+      background: none;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--ink);
+      flex-shrink: 0;
     }
-    .brand-mark { font-size: 18px; }
-    .brand-sub { font-size: 9px; margin-top: 0; }
-
-    /* Nav becomes horizontal scrollable tabs */
-    .nav {
-      padding: 4px 0 6px;
-      flex: 0 0 auto;
-      display: flex;
-      overflow-x: auto;
-      gap: 2px;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-    }
-    .nav::-webkit-scrollbar { display: none; }
-    .nav-section { display: none; }
-    .nav-btn {
-      flex: 0 0 auto;
-      padding: 8px 12px;
-      font-size: 13px;
-      border-radius: 999px;
+    #mobileMenuBtn:hover { background: var(--rule-soft); }
+    #mobileTopBarTitle {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
       white-space: nowrap;
-      background: var(--rule-soft);
     }
-    .nav-btn .nav-icon { display: none; }
-    .nav-btn:hover { background: var(--rule-soft); }
-    .nav-btn.active { background: var(--ink); }
 
-    /* Hide the sidebar footer on mobile — surface its actions elsewhere */
-    .sidebar-footer {
-      display: none;
-    }
+    /* Backdrop shows when sidebar is open */
+    #sidebarBackdrop.show { display: block; }
 
     /* --- Main content --- */
-    .main { padding: 18px 16px 100px; }
-    .page-head { margin-bottom: 20px; padding-bottom: 16px; }
-    .page-title { font-size: 24px; line-height: 1.15; }
+    .main { padding: 16px 14px 80px; max-width: 100%; }
+    .page-head { margin-bottom: 18px; padding-bottom: 14px; }
+    .page-title { font-size: 22px; line-height: 1.15; }
     .page-eyebrow { font-size: 9px; }
     .page-desc { font-size: 13px; }
 
-    /* --- Stat cards: stack 2 per row, tighter --- */
+    /* --- Stat cards: 2 per row --- */
     .stat-grid {
       grid-template-columns: repeat(2, 1fr);
       gap: 8px;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
     }
     .stat { padding: 12px 14px; }
     .stat-label { font-size: 9px; }
-    .stat-val { font-size: 22px; }
+    .stat-val { font-size: 20px; }
     .stat-meta { font-size: 10px; }
 
-    /* --- Two-column dashboard becomes single column --- */
-    .dash-grid {
-      grid-template-columns: 1fr;
-      gap: 14px;
-    }
+    /* --- Dashboard sections stack --- */
+    .dash-grid { grid-template-columns: 1fr; gap: 14px; }
 
-    /* --- Section heads stack their actions below --- */
-    .section { margin-bottom: 24px; }
+    /* --- Section heads stack their actions --- */
+    .section { margin-bottom: 22px; }
     .section-head {
       flex-direction: column;
       align-items: stretch;
-      gap: 10px;
+      gap: 8px;
     }
     .section-title { font-size: 16px; }
 
-    /* --- Buttons: bigger tap targets (Apple HIG: 44pt min) --- */
+    /* --- Buttons: bigger tap targets --- */
     .btn {
-      padding: 10px 14px;
+      padding: 9px 14px;
       font-size: 13px;
-      min-height: 40px;
+      min-height: 38px;
+      justify-content: center;
     }
-    .btn-sm { padding: 7px 10px; min-height: 32px; }
+    .btn-sm { padding: 7px 11px; min-height: 32px; }
     .btn-icon-only {
       padding: 8px 10px;
-      font-size: 16px;
+      font-size: 15px;
       min-width: 36px;
       min-height: 36px;
     }
 
-    /* --- Filters: scroll horizontally, don't wrap & break --- */
+    /* --- Filters scroll horizontally so they don't wrap into a mess --- */
     .filter-row {
       flex-wrap: nowrap;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       padding-bottom: 4px;
-      margin-bottom: 10px;
       scrollbar-width: none;
     }
     .filter-row::-webkit-scrollbar { display: none; }
@@ -508,83 +527,122 @@
     }
     .search-input {
       flex: 1 0 auto;
-      min-width: 160px;
+      min-width: 150px;
       padding: 8px 12px;
       font-size: 13px;
     }
 
-    /* --- CARDS-INSTEAD-OF-TABLES: this is the key mobile win ---
-       Tables turn into stacked card rows. Each <tr> = one card,
-       each <td> = label/value pair. We use data-label attrs added in JS,
-       but as a fallback, this works because we hide the <thead> entirely
-       and rebuild visual hierarchy in each row. */
+    /* --- TABLES → COMPACT CARDS (readable, no horizontal scroll) ---
+       Same table semantics work, we just restyle on mobile.
+       Each <tr> = a compact card with the first cell prominent,
+       money cells inlined as a row, actions tucked at the right. */
     .card .table thead { display: none; }
     .card .table,
-    .card .table tbody,
-    .card .table tr,
-    .card .table td {
+    .card .table tbody {
       display: block;
       width: 100%;
     }
     .card .table tr {
-      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-areas:
+        "title actions"
+        "meta meta";
+      gap: 4px 8px;
+      padding: 12px 14px;
       border-bottom: 1px solid var(--rule-soft);
+      align-items: start;
     }
     .card .table tr:last-child { border-bottom: none; }
     .card .table tr:hover td { background: transparent; }
     .card .table td {
-      padding: 3px 0;
+      display: block;
+      padding: 0;
       border-bottom: none;
       text-align: left !important;
+      font-size: 13px;
+      line-height: 1.4;
     }
-    /* The first <td> in each row gets the prominent treatment (title) */
+    /* First cell = the title block (item name + sub) */
     .card .table td:first-child {
+      grid-area: title;
       font-size: 14px;
-      margin-bottom: 4px;
-    }
-    /* Money cells get a label prefix via data-label */
-    .card .table td[data-label]::before {
-      content: attr(data-label) ": ";
-      color: var(--ink-muted);
-      font-size: 11px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-right: 6px;
       font-weight: 500;
     }
-    /* Actions row sits at the bottom right */
+    /* All "money/data" cells share the meta row, inline-flowed */
+    .card .table td:not(:first-child):not(.col-actions):not(:empty) {
+      grid-area: meta;
+      display: inline-block;
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin-right: 12px;
+    }
+    /* Labels for money cells (only show on mobile, via data-label attr) */
+    .card .table td[data-label]:not(:empty)::before {
+      content: attr(data-label) " ";
+      color: var(--ink-muted);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-right: 3px;
+      font-weight: 500;
+    }
+    /* Hide empty cells entirely so they don't take up grid space */
+    .card .table td:empty,
+    .card .table td:has(> .text-muted:only-child) { display: none; }
+    /* Stack helper class for items that have multiple metadata divs in one cell */
+    .card .table td:not(:first-child) > div {
+      display: inline;
+      margin-right: 8px;
+    }
+    .card .table td:not(:first-child) > div:not(:last-child)::after {
+      content: " · ";
+      color: var(--ink-muted);
+      opacity: 0.5;
+    }
+    /* Badge column flows into meta */
+    .card .table td .badge {
+      vertical-align: baseline;
+    }
+    /* Actions stay top-right */
     .card .table td.col-actions {
+      grid-area: actions;
       text-align: right !important;
-      margin-top: 6px;
+      white-space: nowrap;
     }
 
-    /* --- Comm cards (these already stack well, just tighten) --- */
+    /* --- Comm cards tighten --- */
     .comm-card { padding: 12px 14px; }
     .comm-subject { font-size: 14px; }
     .comm-body { font-size: 13px; }
     .comm-head { flex-direction: column; gap: 8px; }
 
-    /* --- Modal: full-screen on mobile --- */
+    /* --- Modal: full-screen-ish on mobile --- */
     .modal-backdrop { padding: 0; align-items: flex-end; }
     .modal {
       max-width: 100%;
       max-height: 92vh;
-      border-radius: 12px 12px 0 0;
-      padding: 22px 18px 24px;
+      border-radius: 14px 14px 0 0;
+      padding: 20px 16px 24px;
     }
     .modal-title { font-size: 17px; }
     .form-row, .form-row-3 { grid-template-columns: 1fr; }
     input[type=text], input[type=number], input[type=date], select, textarea {
       padding: 10px 12px;
-      font-size: 16px;  /* iOS won't zoom in on focus if >= 16px */
+      font-size: 16px;  /* iOS won't zoom on focus if >= 16px */
     }
     .modal-foot { flex-direction: column-reverse; gap: 8px; }
     .modal-foot .btn { width: 100%; }
 
-    /* --- Budget overview cards stack on mobile --- */
-    .card[style*="grid-template-columns: repeat(4, 1fr)"],
+    /* --- Budget overview 4-col stat grid → 2-col on mobile --- */
     .card > div[style*="grid-template-columns: repeat(4, 1fr)"] {
       grid-template-columns: repeat(2, 1fr) !important;
+      gap: 14px !important;
+    }
+    /* Budget total editable input shouldn't overflow */
+    #budgetTotal {
+      width: 100% !important;
+      font-size: 20px !important;
     }
 
     /* --- Timeline tighter --- */
@@ -596,100 +654,18 @@
     /* --- Notes --- */
     .note { font-size: 12px; padding: 10px 12px; }
 
-    /* --- Floating action menu (replaces sidebar footer) --- */
-    #mobileMenu {
-      display: block !important;
-    }
-
-    /* --- Sign-in gate: tighter on small screens --- */
+    /* --- Sign-in gate compresses --- */
     #gate > div {
       padding: 28px 22px;
       width: 92%;
     }
 
-    /* --- Toast positioning --- */
+    /* --- Toast --- */
     .toast {
-      bottom: 80px;
+      bottom: 24px;
       right: 16px;
       left: 16px;
       text-align: center;
-    }
-  }
-
-  /* Hide the mobile menu on desktop */
-  #mobileMenu { display: none; }
-
-  @media (max-width: 760px) {
-    /* --- The floating action menu itself --- */
-    #mobileMenu {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      z-index: 90;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 8px;
-    }
-    .mm-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      background: var(--paper);
-      padding: 8px;
-      border-radius: 12px;
-      border: 1px solid var(--rule);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-      transform: translateY(8px);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.15s, transform 0.15s;
-    }
-    .mm-actions.open {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
-    .mm-actions button {
-      background: none;
-      border: none;
-      color: var(--ink);
-      padding: 8px 14px;
-      font-family: inherit;
-      font-size: 13px;
-      text-align: left;
-      cursor: pointer;
-      border-radius: 6px;
-      white-space: nowrap;
-    }
-    .mm-actions button:hover { background: var(--rule-soft); }
-    .mm-actions .mm-user {
-      font-size: 10px;
-      color: var(--ink-muted);
-      padding: 4px 14px 8px;
-      border-bottom: 1px solid var(--rule-soft);
-      margin-bottom: 4px;
-      max-width: 220px;
-      word-break: break-all;
-    }
-    .mm-actions .mm-sync {
-      font-size: 10px;
-      color: var(--moss);
-      padding: 4px 14px;
-    }
-    #mmToggle {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: var(--ink);
-      color: var(--paper);
-      border: none;
-      font-size: 22px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
   }
 </style>
@@ -744,6 +720,10 @@
   </aside>
 
   <!-- ========= MAIN ========= -->
+  <div id="mobileTopBar">
+    <button id="mobileMenuBtn" aria-label="Open menu">☰</button>
+    <div id="mobileTopBarTitle">Dashboard</div>
+  </div>
   <main class="main" id="main">
     <div class="loading">Loading your data…</div>
   </main>
@@ -756,17 +736,8 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- ========= MOBILE FLOATING ACTION MENU (hidden on desktop via CSS) ========= -->
-<div id="mobileMenu" style="display:none;">
-  <div class="mm-actions" id="mmActions">
-    <div class="mm-user" id="mmUser"></div>
-    <div class="mm-sync" id="mmSync">✓ synced</div>
-    <button id="mmExport">Export backup</button>
-    <button id="mmImport">Import backup</button>
-    <button id="mmSignout">Sign out</button>
-  </div>
-  <button id="mmToggle" aria-label="Menu">⋯</button>
-</div>
+<!-- Backdrop for slide-in sidebar (mobile only) -->
+<div id="sidebarBackdrop"></div>
 
 <script type="module">
 /* ============================================================
@@ -872,8 +843,6 @@ function subscribeToRemoteChanges() {
       ind.style.opacity = '1';
       setTimeout(() => { ind.style.opacity = '0.5'; }, 1500);
     }
-    const mmSync = document.getElementById('mmSync');
-    if (mmSync) mmSync.textContent = '↻ synced from cloud';
   }, (err) => {
     console.error('Subscribe error:', err);
     showToast('Lost connection to cloud');
@@ -898,8 +867,6 @@ async function saveState() {
         ind.style.opacity = '1';
         setTimeout(() => { ind.style.opacity = '0.5'; }, 1500);
       }
-      const mmSync = document.getElementById('mmSync');
-      if (mmSync) mmSync.textContent = '✓ saved to cloud';
     } catch (e) {
       console.error('Save failed:', e);
       showToast('Could not save to cloud');
@@ -1053,13 +1020,29 @@ const VIEWS = {
   contacts: renderContacts
 };
 
-function setView(view) {
+const VIEW_TITLES = {
+  dashboard: 'Dashboard',
+  selections: 'Selections',
+  communications: 'Communications',
+  budget: 'Budget',
+  schedule: 'Schedule',
+  contacts: 'Contacts'
+};
+
+function setView(view, skipHistory) {
   state.view = view;
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
   const fn = VIEWS[view] || renderDashboard;
   document.getElementById('main').innerHTML = fn();
   bindViewEvents(view);
   window.scrollTo(0, 0);
+  // Update mobile top bar title
+  const tb = document.getElementById('mobileTopBarTitle');
+  if (tb) tb.textContent = VIEW_TITLES[view] || 'Dashboard';
+  // Push history state so back button works
+  if (!skipHistory) {
+    history.pushState({ view }, '', '#' + view);
+  }
 }
 
 /* ============================================================
@@ -1977,33 +1960,47 @@ document.getElementById('importFile').onchange = async (e) => {
 };
 
 /* ============================================================
-   MOBILE MENU — delegates to existing desktop buttons
+   MOBILE SIDEBAR DRAWER + BROWSER BACK BUTTON
 ============================================================ */
-const mmToggle = document.getElementById('mmToggle');
-const mmActions = document.getElementById('mmActions');
-if (mmToggle) {
-  mmToggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    mmActions.classList.toggle('open');
-  });
-  document.addEventListener('click', (e) => {
-    if (!mmActions.contains(e.target) && e.target !== mmToggle) {
-      mmActions.classList.remove('open');
-    }
-  });
-  document.getElementById('mmExport').onclick = () => {
-    mmActions.classList.remove('open');
-    document.getElementById('exportBtn').click();
-  };
-  document.getElementById('mmImport').onclick = () => {
-    mmActions.classList.remove('open');
-    document.getElementById('importBtn').click();
-  };
-  document.getElementById('mmSignout').onclick = () => {
-    mmActions.classList.remove('open');
-    document.getElementById('signoutBtn').click();
-  };
+const sidebarEl = document.querySelector('.sidebar');
+const backdropEl = document.getElementById('sidebarBackdrop');
+const menuBtn = document.getElementById('mobileMenuBtn');
+
+function openDrawer() {
+  if (!sidebarEl) return;
+  sidebarEl.classList.add('open');
+  backdropEl.classList.add('show');
+  // Push a history state so the back button closes the drawer
+  history.pushState({ drawer: true }, '');
 }
+function closeDrawer() {
+  if (!sidebarEl) return;
+  sidebarEl.classList.remove('open');
+  backdropEl.classList.remove('show');
+}
+
+if (menuBtn) menuBtn.addEventListener('click', openDrawer);
+if (backdropEl) backdropEl.addEventListener('click', closeDrawer);
+
+// Close drawer whenever a nav button is tapped (after they navigate)
+document.getElementById('nav').addEventListener('click', (e) => {
+  if (e.target.closest('.nav-btn')) closeDrawer();
+});
+
+// Browser back button handling
+window.addEventListener('popstate', (e) => {
+  // If drawer is open, close it
+  if (sidebarEl && sidebarEl.classList.contains('open')) {
+    sidebarEl.classList.remove('open');
+    backdropEl.classList.remove('show');
+    return;
+  }
+  // Otherwise, navigate to the previous view based on history state
+  const targetView = (e.state && e.state.view) || 'dashboard';
+  if (targetView !== state.view) {
+    setView(targetView, true);  // skip pushState
+  }
+});
 
 /* ============================================================
    GOOGLE SIGN-IN GATE
@@ -2049,9 +2046,6 @@ async function handleSignedIn(user) {
   // Show signed-in info in sidebar
   const tag = document.getElementById('signedInAs');
   if (tag) tag.textContent = `Signed in as ${user.displayName || user.email}`;
-  // Mirror to mobile menu
-  const mmUser = document.getElementById('mmUser');
-  if (mmUser) mmUser.textContent = user.displayName ? `${user.displayName} · ${user.email}` : user.email;
   // Show the app
   document.getElementById('gate').style.display = 'none';
   document.getElementById('app').style.display = 'grid';
