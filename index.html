@@ -388,14 +388,309 @@
   }
 
   /* responsive */
-  @media (max-width: 900px) {
+  /* =============================================================
+     MOBILE STYLES — only apply below 760px, desktop is untouched
+  ============================================================== */
+  @media (max-width: 760px) {
+    /* --- Layout shift: sidebar becomes a top bar --- */
     .app { grid-template-columns: 1fr; }
-    .sidebar { position: relative; height: auto; flex-direction: row; flex-wrap: wrap; padding: 16px; }
-    .nav { padding: 8px 0; display: flex; flex-wrap: wrap; gap: 4px; width: 100%; }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: auto;
+      flex-direction: column;
+      padding: 12px 16px 0;
+      border-right: none;
+      border-bottom: 1px solid var(--rule);
+      z-index: 50;
+    }
+    .brand {
+      padding: 0 0 10px;
+      border-bottom: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .brand-mark { font-size: 18px; }
+    .brand-sub { font-size: 9px; margin-top: 0; }
+
+    /* Nav becomes horizontal scrollable tabs */
+    .nav {
+      padding: 4px 0 6px;
+      flex: 0 0 auto;
+      display: flex;
+      overflow-x: auto;
+      gap: 2px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .nav::-webkit-scrollbar { display: none; }
     .nav-section { display: none; }
-    .stat-grid { grid-template-columns: repeat(2, 1fr); }
-    .dash-grid { grid-template-columns: 1fr; }
-    .main { padding: 20px; }
+    .nav-btn {
+      flex: 0 0 auto;
+      padding: 8px 12px;
+      font-size: 13px;
+      border-radius: 999px;
+      white-space: nowrap;
+      background: var(--rule-soft);
+    }
+    .nav-btn .nav-icon { display: none; }
+    .nav-btn:hover { background: var(--rule-soft); }
+    .nav-btn.active { background: var(--ink); }
+
+    /* Hide the sidebar footer on mobile — surface its actions elsewhere */
+    .sidebar-footer {
+      display: none;
+    }
+
+    /* --- Main content --- */
+    .main { padding: 18px 16px 100px; }
+    .page-head { margin-bottom: 20px; padding-bottom: 16px; }
+    .page-title { font-size: 24px; line-height: 1.15; }
+    .page-eyebrow { font-size: 9px; }
+    .page-desc { font-size: 13px; }
+
+    /* --- Stat cards: stack 2 per row, tighter --- */
+    .stat-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+    .stat { padding: 12px 14px; }
+    .stat-label { font-size: 9px; }
+    .stat-val { font-size: 22px; }
+    .stat-meta { font-size: 10px; }
+
+    /* --- Two-column dashboard becomes single column --- */
+    .dash-grid {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    /* --- Section heads stack their actions below --- */
+    .section { margin-bottom: 24px; }
+    .section-head {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .section-title { font-size: 16px; }
+
+    /* --- Buttons: bigger tap targets (Apple HIG: 44pt min) --- */
+    .btn {
+      padding: 10px 14px;
+      font-size: 13px;
+      min-height: 40px;
+    }
+    .btn-sm { padding: 7px 10px; min-height: 32px; }
+    .btn-icon-only {
+      padding: 8px 10px;
+      font-size: 16px;
+      min-width: 36px;
+      min-height: 36px;
+    }
+
+    /* --- Filters: scroll horizontally, don't wrap & break --- */
+    .filter-row {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+      margin-bottom: 10px;
+      scrollbar-width: none;
+    }
+    .filter-row::-webkit-scrollbar { display: none; }
+    .filter-chip {
+      flex: 0 0 auto;
+      padding: 7px 12px;
+      font-size: 12px;
+    }
+    .search-input {
+      flex: 1 0 auto;
+      min-width: 160px;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    /* --- CARDS-INSTEAD-OF-TABLES: this is the key mobile win ---
+       Tables turn into stacked card rows. Each <tr> = one card,
+       each <td> = label/value pair. We use data-label attrs added in JS,
+       but as a fallback, this works because we hide the <thead> entirely
+       and rebuild visual hierarchy in each row. */
+    .card .table thead { display: none; }
+    .card .table,
+    .card .table tbody,
+    .card .table tr,
+    .card .table td {
+      display: block;
+      width: 100%;
+    }
+    .card .table tr {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--rule-soft);
+    }
+    .card .table tr:last-child { border-bottom: none; }
+    .card .table tr:hover td { background: transparent; }
+    .card .table td {
+      padding: 3px 0;
+      border-bottom: none;
+      text-align: left !important;
+    }
+    /* The first <td> in each row gets the prominent treatment (title) */
+    .card .table td:first-child {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    /* Money cells get a label prefix via data-label */
+    .card .table td[data-label]::before {
+      content: attr(data-label) ": ";
+      color: var(--ink-muted);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-right: 6px;
+      font-weight: 500;
+    }
+    /* Actions row sits at the bottom right */
+    .card .table td.col-actions {
+      text-align: right !important;
+      margin-top: 6px;
+    }
+
+    /* --- Comm cards (these already stack well, just tighten) --- */
+    .comm-card { padding: 12px 14px; }
+    .comm-subject { font-size: 14px; }
+    .comm-body { font-size: 13px; }
+    .comm-head { flex-direction: column; gap: 8px; }
+
+    /* --- Modal: full-screen on mobile --- */
+    .modal-backdrop { padding: 0; align-items: flex-end; }
+    .modal {
+      max-width: 100%;
+      max-height: 92vh;
+      border-radius: 12px 12px 0 0;
+      padding: 22px 18px 24px;
+    }
+    .modal-title { font-size: 17px; }
+    .form-row, .form-row-3 { grid-template-columns: 1fr; }
+    input[type=text], input[type=number], input[type=date], select, textarea {
+      padding: 10px 12px;
+      font-size: 16px;  /* iOS won't zoom in on focus if >= 16px */
+    }
+    .modal-foot { flex-direction: column-reverse; gap: 8px; }
+    .modal-foot .btn { width: 100%; }
+
+    /* --- Budget overview cards stack on mobile --- */
+    .card[style*="grid-template-columns: repeat(4, 1fr)"],
+    .card > div[style*="grid-template-columns: repeat(4, 1fr)"] {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* --- Timeline tighter --- */
+    .timeline { padding-left: 20px; }
+    .timeline-card { padding: 10px 12px; }
+    .timeline-title { font-size: 14px; }
+    .timeline-meta { font-size: 12px; }
+
+    /* --- Notes --- */
+    .note { font-size: 12px; padding: 10px 12px; }
+
+    /* --- Floating action menu (replaces sidebar footer) --- */
+    #mobileMenu {
+      display: block !important;
+    }
+
+    /* --- Sign-in gate: tighter on small screens --- */
+    #gate > div {
+      padding: 28px 22px;
+      width: 92%;
+    }
+
+    /* --- Toast positioning --- */
+    .toast {
+      bottom: 80px;
+      right: 16px;
+      left: 16px;
+      text-align: center;
+    }
+  }
+
+  /* Hide the mobile menu on desktop */
+  #mobileMenu { display: none; }
+
+  @media (max-width: 760px) {
+    /* --- The floating action menu itself --- */
+    #mobileMenu {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .mm-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: var(--paper);
+      padding: 8px;
+      border-radius: 12px;
+      border: 1px solid var(--rule);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      transform: translateY(8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .mm-actions.open {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .mm-actions button {
+      background: none;
+      border: none;
+      color: var(--ink);
+      padding: 8px 14px;
+      font-family: inherit;
+      font-size: 13px;
+      text-align: left;
+      cursor: pointer;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .mm-actions button:hover { background: var(--rule-soft); }
+    .mm-actions .mm-user {
+      font-size: 10px;
+      color: var(--ink-muted);
+      padding: 4px 14px 8px;
+      border-bottom: 1px solid var(--rule-soft);
+      margin-bottom: 4px;
+      max-width: 220px;
+      word-break: break-all;
+    }
+    .mm-actions .mm-sync {
+      font-size: 10px;
+      color: var(--moss);
+      padding: 4px 14px;
+    }
+    #mmToggle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: var(--paper);
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 </style>
 </head>
@@ -460,6 +755,18 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ========= MOBILE FLOATING ACTION MENU (hidden on desktop via CSS) ========= -->
+<div id="mobileMenu" style="display:none;">
+  <div class="mm-actions" id="mmActions">
+    <div class="mm-user" id="mmUser"></div>
+    <div class="mm-sync" id="mmSync">✓ synced</div>
+    <button id="mmExport">Export backup</button>
+    <button id="mmImport">Import backup</button>
+    <button id="mmSignout">Sign out</button>
+  </div>
+  <button id="mmToggle" aria-label="Menu">⋯</button>
+</div>
 
 <script type="module">
 /* ============================================================
@@ -565,6 +872,8 @@ function subscribeToRemoteChanges() {
       ind.style.opacity = '1';
       setTimeout(() => { ind.style.opacity = '0.5'; }, 1500);
     }
+    const mmSync = document.getElementById('mmSync');
+    if (mmSync) mmSync.textContent = '↻ synced from cloud';
   }, (err) => {
     console.error('Subscribe error:', err);
     showToast('Lost connection to cloud');
@@ -589,6 +898,8 @@ async function saveState() {
         ind.style.opacity = '1';
         setTimeout(() => { ind.style.opacity = '0.5'; }, 1500);
       }
+      const mmSync = document.getElementById('mmSync');
+      if (mmSync) mmSync.textContent = '✓ saved to cloud';
     } catch (e) {
       console.error('Save failed:', e);
       showToast('Could not save to cloud');
@@ -971,9 +1282,9 @@ function renderSelections() {
                   ${s.notes ? `<div class="text-small" style="color:var(--ink-muted); font-style:italic">${escapeHtml(s.notes)}</div>` : ''}
                   ${!s.vendor && !s.choice && !s.notes ? '<span class="text-muted">—</span>' : ''}
                 </td>
-                <td class="currency right">${s.cost ? fmtMoney(s.cost) : '<span class="text-muted">—</span>'}</td>
-                <td class="currency right">${s.actual ? fmtMoney(s.actual) : '<span class="text-muted">—</span>'}</td>
-                <td class="currency right ${overBudget ? '' : ''}" style="${overBudget ? 'color:var(--rust); font-weight:500' : (variance < 0 ? 'color:var(--moss)' : 'color:var(--ink-muted)')}">
+                <td class="currency right" data-label="Budget">${s.cost ? fmtMoney(s.cost) : '<span class="text-muted">—</span>'}</td>
+                <td class="currency right" data-label="Paid">${s.actual ? fmtMoney(s.actual) : '<span class="text-muted">—</span>'}</td>
+                <td class="currency right ${overBudget ? '' : ''}" data-label="Variance" style="${overBudget ? 'color:var(--rust); font-weight:500' : (variance < 0 ? 'color:var(--moss)' : 'color:var(--ink-muted)')}">
                   ${s.actual ? (variance === 0 ? '—' : (variance > 0 ? '+' : '') + fmtMoney(variance)) : '<span class="text-muted">—</span>'}
                 </td>
                 <td><span class="badge b-${s.status}">${s.status}</span></td>
@@ -1666,6 +1977,35 @@ document.getElementById('importFile').onchange = async (e) => {
 };
 
 /* ============================================================
+   MOBILE MENU — delegates to existing desktop buttons
+============================================================ */
+const mmToggle = document.getElementById('mmToggle');
+const mmActions = document.getElementById('mmActions');
+if (mmToggle) {
+  mmToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    mmActions.classList.toggle('open');
+  });
+  document.addEventListener('click', (e) => {
+    if (!mmActions.contains(e.target) && e.target !== mmToggle) {
+      mmActions.classList.remove('open');
+    }
+  });
+  document.getElementById('mmExport').onclick = () => {
+    mmActions.classList.remove('open');
+    document.getElementById('exportBtn').click();
+  };
+  document.getElementById('mmImport').onclick = () => {
+    mmActions.classList.remove('open');
+    document.getElementById('importBtn').click();
+  };
+  document.getElementById('mmSignout').onclick = () => {
+    mmActions.classList.remove('open');
+    document.getElementById('signoutBtn').click();
+  };
+}
+
+/* ============================================================
    GOOGLE SIGN-IN GATE
 ============================================================ */
 // EDIT THIS LIST: emails of people allowed to access the tracker.
@@ -1709,6 +2049,9 @@ async function handleSignedIn(user) {
   // Show signed-in info in sidebar
   const tag = document.getElementById('signedInAs');
   if (tag) tag.textContent = `Signed in as ${user.displayName || user.email}`;
+  // Mirror to mobile menu
+  const mmUser = document.getElementById('mmUser');
+  if (mmUser) mmUser.textContent = user.displayName ? `${user.displayName} · ${user.email}` : user.email;
   // Show the app
   document.getElementById('gate').style.display = 'none';
   document.getElementById('app').style.display = 'grid';
